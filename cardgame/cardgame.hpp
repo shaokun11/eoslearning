@@ -1,18 +1,21 @@
 #include <eosiolib/eosio.hpp>
-using namespace std;
+
+using namespace eosio;
+
 class cardgame : public eosio::contract {
 // 继承contract
   public:
-    cardgame( account_name self ):contract(self),_users(self,self){} 
+    cardgame( account_name self):contract(self),
+                                _users(self,self){} 
     //构造方法,并实例化了multi_index表users
-    
-   	/// @abi action 
+   	/// @abi action
     void login(account_name user);
     // table和action 必须加上@abi 的注解，这样才能生存对应的abi，
     // 在eosio.cdt中，使用 [[eosio::action]] 更加简洁
   private:
-  	/// @abi table users
-  	struct user_info
+
+  	/// @abi table
+  	struct  user_info
   	{
   		account_name name;			//玩家的名字    account_name 是uint64_t的一个别名
   		uint16_t win_count = 0;		
@@ -33,3 +36,4 @@ class cardgame : public eosio::contract {
   	// 							 primary key 
   	user_table _users; //声明表的实例
 };
+EOSIO_ABI(cardgame,(login))

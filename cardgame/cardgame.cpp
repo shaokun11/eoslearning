@@ -1,4 +1,5 @@
-#include "gameplay.cpp"
+#include "cardgame.hpp"
+
 void cardgame::login(account_name user)
 {
 	require_auth(user); 
@@ -15,4 +16,4 @@ void cardgame::login(account_name user)
 	// 这里使用multi_index的find 和 emplace(插入)两种方法，
 	// 这些方法的形式都是一样的，记住就好，可以去官网查看详细的方法说明
 }
-EOSIO_ABI(cardgame,(login))
+
