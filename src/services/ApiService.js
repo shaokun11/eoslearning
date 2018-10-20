@@ -29,10 +29,11 @@ class ApiService {
         return new Promise((resolve, reject) => {
             localStorage.setItem('cardgame_account', username);
             localStorage.setItem("cardgame_key", key);
-
-            resolve("hello shaokun")
-            // takeAction("login", {username}).then(res => {
-            //     resolve(res);
+            //当去区块链执行成功后，将会走这里
+            console.log("login success");
+            resolve()
+            // takeAction("login", {username}).then(() => {
+            //     resolve();
             // }).catch(err => {
             //     localStorage.removeItem("cardgame_account");
             //     localStorage.removeItem("cardgame_key");
