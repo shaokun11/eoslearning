@@ -1,44 +1,57 @@
-import {Api, JsonRpc, RpcError, JsSignatureProvider} from 'eosjs';
+import {Api, JsonRpc, JsSignatureProvider} from 'eosjs';
 
-async function takeAction(action, value) {
-    const pk = process.env.REACT_APP_EOS_PRIVATE_KEY;
+async function takeAction(action, account, pk, dataValue) {
+    console.log("takeAction", action, dataValue)
     const rpc = new JsonRpc(process.env.REACT_APP_EOS_HTTP_ENDPOINT);
-    const provider = new JsSignatureProvider([pk]);
-    const api = new Api({rpc, provider, textDecoder: new TextDecoder(), textEncoder: new TextEncoder()});
+    const signatureProvider = new JsSignatureProvider([pk]);
+    const api = new Api({
+        rpc,
+        signatureProvider,
+        textDecoder: new TextDecoder(),
+        textEncoder: new TextEncoder()
+    });
     try {
         return await api.transact({
-            action: [{
-                account: process.env.REACT_APP_EOS_CONTRACT_NAME,      // 合约的拥有这
-                name: 'action',
+            actions: [{
+                account: "shaokun11113",  // 合约的拥有者
+                name: action,             // 执行的合约方法
                 authorization: [{
-                    actor: localStorage.getItem('cardgame_account'),  // 用户输入的账号名
-                    permission: 'active'   // 所需的权限
+                    actor: account,       // 执行合约的账户
+                    permission: 'active', // 执行合约的账户所需要的权限
                 }],
-                data: value,    // 携带的参数
+                data: dataValue,          // 所需要的参数,以json字符串进行传递，注意key为合约中定义的参数的名字，也可以通过abi进行查看
+
             }]
         }, {
-            blocksBehind: 3,   // 3个节点确认后
-            expireSeconds: 30, // 超时时间 30秒
+            blocksBehind: 3,              // 多少个块后确认
+            expireSeconds: 30,            // 超时时间
         });
-    } catch (e) {
-        console.log(JSON.stringify(e.json, null, 2))
-        if (e instanceof RpcError)
-            console.log(JSON.stringify(e.json, null, 2))
+    } catch (err) {
+        throw(err)
     }
 }
 
 class ApiService {
-    static login({username, key}) {
+
+    static async getUserByName(username) {
+        const rpc = new JsonRpc(process.env.REACT_APP_EOS_HTTP_ENDPOINT);
+        const res = await rpc.get_table_rows({
+            code: process.env.REACT_APP_EOS_CONTRACT_NAME,             //由于在合约中写死了，这里也可以写死
+            scope: process.env.REACT_APP_EOS_CONTRACT_NAME,             //由于在合约中写死了，这里也可以写死
+            table: "userinfo",                                           //由于在合约中写死了，这里也可以写死
+            json: true,                                                // 默认值 ，可以不填
+            lower_bound: username,                                      // 匹配规则，不填默认返回全部
+        })
+        return res.rows[0];
+    }
+
+    static login({name, key}) {
         return new Promise((resolve, reject) => {
-            localStorage.setItem('cardgame_account', username);
-            localStorage.setItem("cardgame_key", key);
-            // 执行登录，这里只需要用户的account 即可
-            takeAction("login", {username}).then(() => {
-                console.log("login success");
+            takeAction("login", name, key, {user: name}).then(res => {
+                // 执行成功会返回默认的交易hash
+                console.log("login success", res);
                 resolve();
             }).catch(err => {
-                localStorage.removeItem("cardgame_account");
-                localStorage.removeItem("cardgame_key");
                 console.log(err)
                 reject(err);
             })

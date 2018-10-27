@@ -6,38 +6,14 @@ import {ApiService} from "../services/index";
 
 
 class Login extends Component {
-    state = {
-        form: {
-            username: '',
-            key: '',
-            error: ''
-        }
-    };
 
-    constructor(props) {
-        super(props);
-        this.handleChange = this.handleChange.bind(this);
-        this.handleSubmit = this.handleSubmit.bind(this);
-    }
-
-    handleChange(e) {
-        const {name, value} = e.target;
-        this.setState({
-            form: {
-                ...this.state.form,
-                [name]: value,
-                error: ''
-            }
-        })
-    }
-
-    handleSubmit(e) {
-        e.preventDefault();
+    login(name, privateKey) {
+        console.log(name,privateKey)
         const {setUser} = this.props;
-        const {form} = this.state;
-        return ApiService.login(form)
+
+        return ApiService.login({name: name, key: privateKey})
             .then(() => {
-                setUser({name: form.username})
+                setUser({name: name})
             }).catch(err => {
                 this.setState({
                     error: err.toString()
@@ -48,30 +24,14 @@ class Login extends Component {
     render() {
         return (
             <div>
-                <form onSubmit={this.handleSubmit} >
-                    <div>
-                        <label> account name</label>
-                        <input type="text"
-                               name='username'
-                               placeholder='All small letters, a-z, 1-5 or dot, max 12 characters'
-                               onChange={this.handleChange}
-                               required
-                        />
-                    </div>
-                    <div>
-                        <label> private key</label>
-                        <input type="password"
-                               name='key'
-                               onChange={this.handleChange}
-                               required
-                        />
-                    </div>
-                    <div>
-                        <button type='submit'>
-                            {'confirm'}
-                        </button>
-                    </div>
-                </form>
+                <button
+                    onClick={this.login.bind(this, process.env.REACT_APP_EOS_CONTRACT_NAME, process.env.REACT_APP_EOS_PRIVATE_KEY)}>
+                    login account3
+                </button>
+                <button
+                    onClick={this.login.bind(this, process.env.REACT_APP_EOS_CONTRACT_NAME_S, process.env.REACT_APP_EOS_PRIVATE_KEY_S)}>
+                    login account4
+                </button>
             </div>
         )
     }
