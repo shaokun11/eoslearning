@@ -4,12 +4,7 @@ async function takeAction(action, account, pk, dataValue) {
     console.log("takeAction", action, dataValue)
     const rpc = new JsonRpc(process.env.REACT_APP_EOS_HTTP_ENDPOINT);
     const signatureProvider = new JsSignatureProvider([pk]);
-    const api = new Api({
-        rpc,
-        signatureProvider,
-        textDecoder: new TextDecoder(),
-        textEncoder: new TextEncoder()
-    });
+    const api = new Api({rpc, signatureProvider, textDecoder: new TextDecoder(), textEncoder: new TextEncoder()});
     try {
         return await api.transact({
             actions: [{
@@ -33,14 +28,18 @@ async function takeAction(action, account, pk, dataValue) {
 
 class ApiService {
 
+    static startgame(name) {
+        return Promise.resolve()
+    }
+
     static async getUserByName(username) {
         const rpc = new JsonRpc(process.env.REACT_APP_EOS_HTTP_ENDPOINT);
         const res = await rpc.get_table_rows({
             code: process.env.REACT_APP_EOS_CONTRACT_NAME,             //由于在合约中写死了，这里也可以写死
-            scope: process.env.REACT_APP_EOS_CONTRACT_NAME,             //由于在合约中写死了，这里也可以写死
-            table: "userinfo",                                           //由于在合约中写死了，这里也可以写死
+            scope: process.env.REACT_APP_EOS_CONTRACT_NAME,            //由于在合约中写死了，这里也可以写死
+            table: "userinfo",                                         //由于在合约中写死了，这里也可以写死
             json: true,                                                // 默认值 ，可以不填
-            lower_bound: username,                                      // 匹配规则，不填默认返回全部
+            lower_bound: username,                                     // 匹配规则，不填默认返回全部
         })
         return res.rows[0];
     }

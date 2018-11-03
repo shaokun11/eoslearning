@@ -8,8 +8,9 @@ class App extends Component {
         const {user: {name}} = this.props;
         return (
             <div>
-                {name && <Game/>}
-                {!name && <Login/>}
+                {<Game/>}
+                {/*{name && <Game/>}*/}
+                {/*{!name && <Login/>}*/}
             </div>
         )
     }
