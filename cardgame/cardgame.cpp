@@ -1,57 +1,68 @@
 #include "cardgame.hpp"
 
-void cardgame::login(account_name user)
+void cardgame::login(eosio::name user)
 {
-	require_auth(user); 
-	//确保这个用户已经被授权
-	// 这里我理解了很久，把我的想法记录在这里
-	// 这里是调用此合约的account name，即提供私钥的account，这里传入的这个account必须拥有它的active权限，
-	// 当然，这里还可以要求有其他的权限，这样就可以给特殊的账号特殊的权限
-	auto user_iterator = _users.find(user);  // 查找
-	if (user_iterator == _users.end()) {
-		user_iterator = _users.emplace(user, [&](auto& new_user){
-			new_user.name = user;
-		});
-	}
-	// 这里使用multi_index的find 和 emplace(插入)两种方法，
-	// 这些方法的形式都是一样的，记住就好，可以去官网查看详细的方法说明
+	_users.emplace(get_self(),[&](auto&  u){
+			u.name = user;
+	});
 }
 
-void cardgame::startgame(account_name name) {
-	require_auth(name);
-	auto& info = _users.get(name, "user not exist");
-	_users.modify(info,name,[&](auto& _to_modify_user){
+void cardgame::startgame(eosio::name user) {
+	auto& itr = _users.get(user.value,"User not exist");
+	_users.modify(itr,get_self(),[&](auto& _to_modify_user){
 		game game_data;
 		for(uint8_t i = 0; i < 4; i++){
-			draw_one_card(game_data.deck_player,game_data.hand_player);
-			draw_one_card(game_data.deck_ai,game_data.hand_ai);
+			draw_card(game_data.deck_player,game_data.hand_player);
+			draw_card(game_data.deck_ai,game_data.hand_ai);
 		}
 		_to_modify_user.game_data = game_data;
 	});
 }
 
-void cardgame::playcard(account_name user,uint8_t player_card_index){
-	require_auth(user);
-	eosio.assert(player_card_index < 4,"invalid hand index"); // 手上牌最多四张
+void cardgame::playcard(eosio::name user, uint8_t player_card_index){
+	eosio::require_auth(user);
+	eosio_assert(player_card_index < 4,"invalid hand index");// 手上牌最多四张
 	// 通过user找到数据表中数据
-	auto& player = _users.get(user,"User not exist");
-	eosio_assert(player.game_data.status == ONGONING,"game have ended"); // 确保本轮游戏没有结束
-	eosio_assert(player.game_data.selected_card_player == 0,"the player have selected car in this turn"); // 确保手上没有选牌
+	auto& player = _users.get(user.value,"User not exist");
+	eosio_assert(player.game_data.status == ONGOING,"game have ended");
+	eosio_assert(player.game_data.selected_card_player == 0,"the player have selected car in this turn");
 	// 修改数据表
-	_users.modify(player,user,[&](auto& _to_modify_user){
+	_users.modify(player,get_self(),[&](auto& _to_modify_user){
 		game& game_data = _to_modify_user.game_data;
 		// 设定选中的卡片id
 		game_data.selected_card_player = game_data.hand_player[player_card_index];
 		// 将手中卡片对应位置置位empty
 		game_data.hand_player[player_card_index] = 0;
 	});
-}
-EOSIO_ABI(cardgame,(login)(playcard))
-
-
-
-
-
-
-
-
+};
+int cardgame::random(const int range) {
+	auto seed_itr = _seed.begin();
+	if (seed_itr  == _seed.end()){	// 如果没有随机数据，就用默认值初始化
+		seed_itr = _seed.emplace(get_self(),[&](auto& s){
+			s = seed{};
+		});
+	};
+	int prime = 65535;
+	int new_seed_value = (seed_itr->seed_value + now()) % prime;
+	_seed.modify(seed_itr,get_self(),[&](auto& s){
+			s.seed_value = new_seed_value;
+	});
+	// 随机范围  0 ~ range
+	int random_res = new_seed_value % range;
+	return random_res;
+};
+void cardgame::draw_card(vector<uint8_t>& deck, vector<uint8_t>& hand) {
+	  int deck_card_idx = random(deck.size());
+	  int first_empty_slot = -1;
+	  for (int i = 0; i <= hand.size(); i++) {
+	      auto id = hand[i];
+	      if (card_dict.at(id).type == EMPTY) {
+	          first_empty_slot = i;
+	          break;
+	      }
+	    }
+	  eosio_assert(first_empty_slot != -1, "No empty slot in the player's hand");
+	  hand[first_empty_slot] = deck[deck_card_idx];
+	  deck.erase(deck.begin() + deck_card_idx);
+ };
+EOSIO_DISPATCH(cardgame,(login)(startgame)(playcard))

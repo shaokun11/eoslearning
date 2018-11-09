@@ -1,0 +1,154 @@
+{
+    "____comment": "This file was generated with eosio-abigen. DO NOT EDIT Tue Nov  6 22:39:48 2018",
+    "version": "eosio::abi/1.0",
+    "structs": [
+        {
+            "name": "game",
+            "base": "",
+            "fields": [
+                {
+                    "name": "status",
+                    "type": "int8"
+                },
+                {
+                    "name": "life_player",
+                    "type": "int8"
+                },
+                {
+                    "name": "ai_player",
+                    "type": "int8"
+                },
+                {
+                    "name": "deck_player",
+                    "type": "uint8[]"
+                },
+                {
+                    "name": "deck_ai",
+                    "type": "uint8[]"
+                },
+                {
+                    "name": "hand_player",
+                    "type": "uint8[]"
+                },
+                {
+                    "name": "hand_ai",
+                    "type": "uint8[]"
+                },
+                {
+                    "name": "selected_card_player",
+                    "type": "uint8"
+                },
+                {
+                    "name": "selected_card_ai",
+                    "type": "uint8"
+                }
+            ]
+        },
+        {
+            "name": "login",
+            "base": "",
+            "fields": [
+                {
+                    "name": "user",
+                    "type": "name"
+                }
+            ]
+        },
+        {
+            "name": "playcard",
+            "base": "",
+            "fields": [
+                {
+                    "name": "user",
+                    "type": "name"
+                },
+                {
+                    "name": "player_card_index",
+                    "type": "uint8"
+                }
+            ]
+        },
+        {
+            "name": "seed",
+            "base": "",
+            "fields": [
+                {
+                    "name": "key",
+                    "type": "uint64"
+                },
+                {
+                    "name": "seed_value",
+                    "type": "uint32"
+                }
+            ]
+        },
+        {
+            "name": "startgame",
+            "base": "",
+            "fields": [
+                {
+                    "name": "user",
+                    "type": "name"
+                }
+            ]
+        },
+        {
+            "name": "userinfo",
+            "base": "",
+            "fields": [
+                {
+                    "name": "name",
+                    "type": "name"
+                },
+                {
+                    "name": "win_count",
+                    "type": "uint16"
+                },
+                {
+                    "name": "lost_count",
+                    "type": "uint16"
+                },
+                {
+                    "name": "game_data",
+                    "type": "game"
+                }
+            ]
+        }
+    ],
+    "types": [],
+    "actions": [
+        {
+            "name": "login",
+            "type": "login",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "playcard",
+            "type": "playcard",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "startgame",
+            "type": "startgame",
+            "ricardian_contract": ""
+        }
+    ],
+    "tables": [
+        {
+            "name": "seed",
+            "type": "seed",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        },
+        {
+            "name": "userinfo",
+            "type": "userinfo",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        }
+    ],
+    "ricardian_clauses": [],
+    "abi_extensions": []
+}
