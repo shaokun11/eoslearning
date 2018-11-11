@@ -1,7 +1,17 @@
 {
-    "____comment": "This file was generated with eosio-abigen. DO NOT EDIT Tue Nov  6 22:39:48 2018",
+    "____comment": "This file was generated with eosio-abigen. DO NOT EDIT Sun Nov 11 19:23:04 2018",
     "version": "eosio::abi/1.0",
     "structs": [
+        {
+            "name": "endgame",
+            "base": "",
+            "fields": [
+                {
+                    "name": "user",
+                    "type": "name"
+                }
+            ]
+        },
         {
             "name": "game",
             "base": "",
@@ -15,7 +25,7 @@
                     "type": "int8"
                 },
                 {
-                    "name": "ai_player",
+                    "name": "life_ai",
                     "type": "int8"
                 },
                 {
@@ -41,11 +51,29 @@
                 {
                     "name": "selected_card_ai",
                     "type": "uint8"
+                },
+                {
+                    "name": "life_lost_player",
+                    "type": "uint8"
+                },
+                {
+                    "name": "life_lost_ai",
+                    "type": "uint8"
                 }
             ]
         },
         {
             "name": "login",
+            "base": "",
+            "fields": [
+                {
+                    "name": "user",
+                    "type": "name"
+                }
+            ]
+        },
+        {
+            "name": "nextround",
             "base": "",
             "fields": [
                 {
@@ -63,7 +91,7 @@
                     "type": "name"
                 },
                 {
-                    "name": "player_card_index",
+                    "name": "index",
                     "type": "uint8"
                 }
             ]
@@ -118,8 +146,18 @@
     "types": [],
     "actions": [
         {
+            "name": "endgame",
+            "type": "endgame",
+            "ricardian_contract": ""
+        },
+        {
             "name": "login",
             "type": "login",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "nextround",
+            "type": "nextround",
             "ricardian_contract": ""
         },
         {
